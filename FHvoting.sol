@@ -138,6 +138,24 @@ contract FHvoting
         return parties[p_i[_index]].vote_count;
     }
     
+    function EVALUATE() public view deployer_only returns (string memory)
+    {
+        uint256 max = 0;
+        string  memory pname = "";
+        for(uint256 i = 0; i < p; i++)
+        {
+            if(max < parties[p_i[i]].vote_count)
+            {
+                max = parties[p_i[i]].vote_count;
+                pname = parties[p_i[i]].name;
+            }
+            //  WARNING: TIE just resolves first party tied as winner
+        }
+        if(max != 0)
+            return pname;
+        else
+            return "Winner could not be determined.";
+    }
     
     function RESET() public deployer_only
     {
