@@ -1,5 +1,5 @@
 pragma solidity ^0.6;
-
+pragma experimental ABIEncoderV2;
 /*
 The following notes may be important for understanding the following code:
  - Any unitialized value (even within an unitialized struct) is set to its default zero-value
@@ -8,6 +8,9 @@ The following notes may be important for understanding the following code:
      - ...
  - keccak256() is the most gas-efficient hash-function of Solidity.
 */
+
+//Note that the respective votes are bound to a short, simultanously working as an index for each individual party.
+//Short and vote-count are therefor only immutable parts of said party!
 
 contract FHvoting
 {
@@ -23,6 +26,8 @@ contract FHvoting
         
         uint256 end_of_votetime;
         bool has_voted;
+        
+        bool initialized;
     }
     mapping(uint256 /*_extID*/ => student) students;
     uint256 s;
@@ -37,8 +42,10 @@ contract FHvoting
         string name;
         
         uint256 vote_count;
+        
+        bool initialized;
     }
-    mapping(string /*_short*/ => party) parties;
+    mapping(string /*_short*/ => party) parties; //making this public would allow you to view the whole party-information by short as well, making that one function redundant (NOT all at once)
     uint256 p;
     mapping(uint256 /*index*/ => string /*party.short*/) p_i;
 
@@ -98,8 +105,10 @@ contract FHvoting
     
     function add_or_edit_student(uint256 _extID, string memory _intID, string memory _name, string memory _famname) public restricted_access
     {
-        students[_extID] = student(_extID, _intID, _name, _famname, students[_extID].end_of_votetime, students[_extID].has_voted); //Editing a student does not change their ability to vote.
-        s_i[s++] = _extID;
+        if(!students[_extID].initialized)
+            s_i[s++] = _extID;
+        students[_extID] = student(_extID, _intID, _name, _famname, students[_extID].end_of_votetime, students[_extID].has_voted, true); //Editing a student does not change their ability to vote.
+
     }
     
     function give_voting_permission(uint256 _extID, uint8 _minutes) public time_restricted restricted_access
@@ -111,8 +120,9 @@ contract FHvoting
     
     function add_or_edit_party(string memory _short, string memory _name) public restricted_access
     {
-        parties[_short] = party(_short, _name, parties[_short].vote_count); //Editing a party does not change how many votes they have received so far.
-        p_i[p++] = _short;
+        if(!parties[_short].initialized)
+            p_i[p++] = _short;
+        parties[_short] = party(_short, _name, parties[_short].vote_count, true); //Editing a party does not change how many votes they have received so far.
     }
     
     function vote(uint256 _extID, string memory _short) public time_restricted
@@ -125,7 +135,7 @@ contract FHvoting
         parties[_short].vote_count++;
         students[_extID].has_voted = true;
         
-        //ISSUE: Everyone can see the input-variables subbmited to a function --> voting is immutable but not anonymous //Could manually add pwd, or use AKAP
+        //ISSUE: Everyone can see the input-variables submitted to a function --> voting is immutable but not anonymous //Could manually add pwd, or use AKAP
         //WARNING: Currently anyone can vote for any studentID that is permitted to vote during that time
     }
     
@@ -138,25 +148,35 @@ contract FHvoting
         return parties[p_i[_index]].vote_count;
     }
     
-    function EVALUATE() public view deployer_only returns (string memory)
+    function EVALUATE() public view deployer_only returns (string[] memory)
     {
+        //We could possibly safe runtime/cost here, by just returning a full array of parties (not just the winners)
+        
         uint256 max = 0;
-        string  memory pname = "";
+        string[] memory winners = new string[](p);
+        uint256 w = 0;
+
         for(uint256 i = 0; i < p; i++)
         {
             if(max < parties[p_i[i]].vote_count)
             {
                 max = parties[p_i[i]].vote_count;
-                pname = parties[p_i[i]].name;
+                
+                for(; w > 0; w--)
+                {
+                    winners[w] = "";
+                }
+                winners[0] = parties[p_i[i]].name;
             }
-            //  WARNING: TIE just resolves first party tied as winner
+            else if(max != 0 && max == parties[p_i[i]].vote_count)
+            {
+                w++;
+                winners[w] = parties[p_i[i]].name;
+            }
         }
-        if(max != 0)
-            return pname;
-        else
-            return "Winner could not be determined.";
+        return winners;
     }
-    
+ 
     function RESET() public deployer_only
     {
         for(uint256 i = 0; i < s; i++)
@@ -183,4 +203,5 @@ contract FHvoting
     {
         return bytes(_string).length == 0;
     }
+    
 }
