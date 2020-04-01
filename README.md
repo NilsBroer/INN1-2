@@ -6,7 +6,7 @@ Goals for INN1:
      - and allow time-restricted access
      - for students to vote (restricted by ID).
      - Properly test the existing contract for mistakes
- - Deploy contract on FH-Blockchain (and run) [ ]
+ - Deploy contract on FH-Blockchain (and run) [INN2]
  
 TODO (leftover):
  - Finding a way to make voting anonymous (currently input-variables are viewable).
@@ -18,12 +18,15 @@ TODO (leftover):
  ---------------------------------------------------------
  
  Goals for INN2:
- - Improve and finish-up initial contract []
- - Add (any) User-Login-feature []
- - Improve anonymity (currently function-parameters are visible) []
- - Impore usability []
+ - Improve and finish-up initial contract [ ]
+ - Add (any) User-Login-feature [ ]
+ - Improve anonymity (currently function-parameters are visible) [ ]
+ - Impore usability [ ]
      - Ideally with Blockchain-internal WebUI
      - Can further be used for login (via MetaMask ?)
- - Actually deploy contract, possibly switch to Rinkeby []
+ - Actually deploy contract, ! switch to Rinkeby ! [ ]
  
  TODO (leftover):
+ - Enable MetaMask on a private FH-Network
+     - so that FHTW can distribute it's own "Ether"
+     - Distribute Ether necessary for voting (to restrict students from unpermitted actions, e.g. voting multiple times)
