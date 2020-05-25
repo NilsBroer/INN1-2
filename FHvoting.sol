@@ -1,205 +1,194 @@
 pragma solidity ^0.6;
-pragma experimental ABIEncoderV2;
-/*
-The following notes may be important for understanding the following code:
- - Any unitialized value (even within an unitialized struct) is set to its default zero-value
-     - false for bool
-     - 0 for any intID
-     - ...
- - keccak256() is the most gas-efficient hash-function of Solidity.
-*/
 
-//Note that the respective votes are bound to a short, simultanously working as an index for each individual party.
-//Short and vote-count are therefor only immutable parts of said party!
-
-contract FHvoting
+contract FHVoting
 {
-    mapping(address /*_addr*/ => address /*addresses[]*/) addresses;
-    address deployer;
-    
-    struct student
+    ///Structs
+    struct Student
     {
-        uint256 extID;
-        string intID;
-        string name;
-        string famname;
-        
-        uint256 end_of_votetime;
-        bool has_voted;
-        
-        bool initialized;
+        address id;
+        bool voted;
+        bool active;
     }
-    mapping(uint256 /*_extID*/ => student) students;
-    uint256 s;
-    mapping(uint256 /*index*/ => uint256 /*student.extID*/) s_i;
-    
-    uint256 internal starttime;
-    uint256 internal endtime;
-    
-    struct party
-    {
-        string short;
-        string name;
-        
-        uint256 vote_count;
-        
-        bool initialized;
-    }
-    mapping(string /*_short*/ => party) parties; //making this public would allow you to view the whole party-information by short as well, making that one function redundant (NOT all at once)
-    uint256 p;
-    mapping(uint256 /*index*/ => string /*party.short*/) p_i;
 
+    struct Party
+    {
+        string id;
+        string name;
+        uint256 votes;
+        bool active;
+    }
+    
+    //Mappings
+    address administrator;
+    mapping(address => address) moderators;
+    mapping(address => Student) students;
+    mapping(string => Party) public parties;
+    
+    //Iterators
+    mapping(uint256 => address) s_i;
+    uint256 s = 0;
+    mapping(uint256 => string) p_i;
+    uint256 p = 0;
+
+    //Constructor
     constructor() public
     {
-        deployer = msg.sender;
-        addresses[0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c] = 0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c;
-        addresses[0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C] = 0x14723A09ACff6D2A60DcdF7aA4AFf308FDDC160C;
-        addresses[0x4B0897b0513fdC7C541B6d9D7E929C4e5364D2dB] = 0x4B0897b0513fdC7C541B6d9D7E929C4e5364D2dB;
-        addresses[0x583031D1113aD414F02576BD6afaBfb302140225] = 0x583031D1113aD414F02576BD6afaBfb302140225;
-        addresses[0xdD870fA1b7C4700F2BD7f44238821C26f7392148] = 0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
-        //replace ^these^ with the initial node-addresses of your network, when not running on remix
+        administrator = msg.sender;
+        moderators[administrator] = administrator;
+        //Already known wallet-addresses can be added like this:
+        //moderators[full-address] = full-address;
     }
     
-    //_____modifiers_____
-    
-    modifier deployer_only()
+    //Modifiers
+    modifier administrator_only()
     {
-        require (msg.sender == deployer, "Only the contract-owner may access this function");
+        require(msg.sender == administrator, "Only the administrator (contract-owner) may access this function.");
         _;
     }
     
-    modifier restricted_access()
+    modifier moderator_only()
     {
-        require (msg.sender == addresses[msg.sender], "Only specific addresses may access this function.");
+        require(msg.sender == moderators[msg.sender], "Only a moderator (see mapping) may access this function.");
         _;
     }
     
-    modifier time_restricted()
+    modifier student_only()
     {
-        if(endtime != 0)
-        {
-            require((block.timestamp >= starttime) && (block.timestamp <= endtime), "This function may only be accessed during (a) specific time-frame(s).");
-        }
-        else
-        {
-            require(block.timestamp >= starttime);
-        }
+        require(students[msg.sender].active, "Only a student (see mapping) may access this function.");
         _;
     }
     
-    //_____functions_____
-    
-    function give_address_permission(address _addr) public deployer_only
+    //Public functions
+    function addModerator(address moderator) public administrator_only
     {
-        addresses[_addr] = _addr;
+        moderators[moderator] = moderator;
     }
     
-    function set_voting_time_intervall(uint256 _starttime, uint256 _endtime) public restricted_access
+    function activateStudent(address adr) public moderator_only
     {
-        if((_endtime > _starttime) && _endtime > block.timestamp)
+        require(!students[adr].active,"Student with given address already active.");
+        bool studentIsNew = !(students[adr].id == adr);
+        
+        students[adr] = Student(adr,false,true);
+        
+        if(studentIsNew)
         {
-            starttime = _starttime;
-            endtime = _endtime;
+            s_i[s++] = adr;
+        }
+        
+    }
+    
+    function deactivateStudent(address adr) public moderator_only
+    {
+        require(students[adr].active,"Student with given address is not active.");
+        
+        students[adr].active = false;
+    }
+    
+    function activateParty(string memory id, string memory name) public moderator_only
+    {
+        require(!parties[id].active,"Party with given ID already active.");
+        bool partyIsNew = !strcomp(parties[id].id,id);
+        
+        parties[id] = Party(id,name,0,true);
+        
+        if(partyIsNew)
+        {
+            p_i[p++] = id;
         }
     }
     
-    function add_or_edit_student(uint256 _extID, string memory _intID, string memory _name, string memory _famname) public restricted_access
+    function editPartyName(string memory id, string memory name) public moderator_only
     {
-        if(!students[_extID].initialized)
-            s_i[s++] = _extID;
-        students[_extID] = student(_extID, _intID, _name, _famname, students[_extID].end_of_votetime, students[_extID].has_voted, true); //Editing a student does not change their ability to vote.
-
-    }
-    
-    function give_voting_permission(uint256 _extID, uint8 _minutes) public time_restricted restricted_access
-    {
-        require(students[_extID].extID == _extID && _extID != 0, "Student does not exist.");
-        if(_minutes == 0) { _minutes = 5; } //default is 5 minutes
-        students[_extID].end_of_votetime = (block.timestamp + (_minutes * 60 + 60)); //Allows student to vote for x minutes "from now on", with 1 minute of buffer-time added.
-    }
-    
-    function add_or_edit_party(string memory _short, string memory _name) public restricted_access
-    {
-        if(!parties[_short].initialized)
-            p_i[p++] = _short;
-        parties[_short] = party(_short, _name, parties[_short].vote_count, true); //Editing a party does not change how many votes they have received so far.
-    }
-    
-    function vote(uint256 _extID, string memory _short) public time_restricted
-    {
-        require(students[_extID].extID == _extID, "Student does not exist.");
-        require(strcomp(parties[_short].short, _short), "Party does not exist.");
-        require(students[_extID].has_voted == false, "Student has already voted.");
-        require(students[_extID].end_of_votetime >= block.timestamp, "Student is not unlocked for voting.");
+        require(parties[id].active,"Party with given ID is not active.");
         
-        parties[_short].vote_count++;
-        students[_extID].has_voted = true;
-        
-        //ISSUE: Everyone can see the input-variables submitted to a function --> voting is immutable but not anonymous //Could manually add pwd, or use AKAP
-        //WARNING: Currently anyone can vote for any studentID that is permitted to vote during that time
+        parties[id].name = name;
     }
     
-    function count_votes(string memory _short) public view returns (uint256)
+    function deactivateParty(string memory id) public moderator_only
     {
-        return parties[_short].vote_count;
-    }
-    function count_votes(uint256 _index) public view returns (uint256)
-    {
-        return parties[p_i[_index]].vote_count;
+        require(parties[id].active,"Party with given ID is not active.");
+        
+        parties[id].active = false;
     }
     
-    function EVALUATE() public view deployer_only returns (string[] memory)
+    function vote(string memory partyId) public student_only
     {
-        //We could possibly safe runtime/cost here, by just returning a full array of parties (not just the winners)
+        require(parties[partyId].active,"Party with given ID is not active.");
+        require(!students[msg.sender].voted,"Student (you) already voted.");
         
+        parties[partyId].votes++;
+        students[msg.sender].voted = true;
+    }
+    
+    function evaluate() public view moderator_only returns (string memory)
+    {
         uint256 max = 0;
-        string[] memory winners = new string[](p);
-        uint256 w = 0;
-
+        string memory winners = "";
+        
         for(uint256 i = 0; i < p; i++)
         {
-            if(max < parties[p_i[i]].vote_count)
+            if(max < parties[p_i[i]].votes)
             {
-                max = parties[p_i[i]].vote_count;
-                
-                for(; w > 0; w--)
-                {
-                    winners[w] = "";
-                }
-                winners[0] = parties[p_i[i]].name;
+                max = parties[p_i[i]].votes;
+                winners = parties[p_i[i]].name;
             }
-            else if(max != 0 && max == parties[p_i[i]].vote_count)
+            else if(max == parties[p_i[i]].votes && max != 0)
             {
-                w++;
-                winners[w] = parties[p_i[i]].name;
+                winners = addWinner(winners,parties[p_i[i]].name);
             }
         }
+        
         return winners;
     }
- 
-    function RESET() public deployer_only
+    
+    function reset() public administrator_only
     {
         for(uint256 i = 0; i < s; i++)
         {
-            students[s_i[i]].has_voted = false;
+            students[s_i[i]].voted = false;
         }
         
-        for(uint256 i = 0; i < p; i++)
+        for(uint256 i = 0; i< p; i++)
         {
-            parties[p_i[i]].vote_count = 0;
+            parties[p_i[i]].votes = 0;
         }
     }
     
-    //------------------------------------------------------------------------------------------
+    //Internal functions
+    function addWinner(string memory _base, string memory _value) pure internal returns (string memory)
+    {
+        bytes memory _baseBytes = bytes(_base);
+        bytes memory _valueBytes = bytes(_value);
+
+        string memory _tmpValue = new string(_baseBytes.length + 1 + _valueBytes.length);
+        bytes memory _newValue = bytes(_tmpValue);
+
+        uint i;
+        uint j;
+
+        for(i=0; i<_baseBytes.length; i++)
+        {
+            _newValue[j++] = _baseBytes[i];
+        }
+        
+        _newValue[j++] = ',';
+
+        for(i=0; i<_valueBytes.length; i++)
+        {
+            _newValue[j++] = _valueBytes[i];
+        }
+
+        return string(_newValue);
+    }
     
-    //_____internal _____functions_____
     function strcomp(string memory _string1, string memory _string2) internal pure returns (bool)
     {
         return (keccak256(abi.encodePacked((_string1))) == keccak256(abi.encodePacked((_string2))) );
         //keccak256 is primarily a hash-function, but can be used for string-comparison and safes some gas in this context
     }
     
-    function isempty(string memory _string) internal pure returns (bool)
+    function strempty(string memory _string) internal pure returns (bool)
     {
         return bytes(_string).length == 0;
     }

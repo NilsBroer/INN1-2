@@ -1,2 +1,5 @@
 #Ignore folder(s)
 Documentation/
+
+#Ignore old file(s)
+FHvoting_old.sol
