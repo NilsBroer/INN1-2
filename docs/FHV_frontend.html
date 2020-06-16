@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<meta charset="UTF-8">
+<script>
+ABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "id",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "activateParty",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "adr",
+				"type": "address"
+			}
+		],
+		"name": "activateStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "moderator",
+				"type": "address"
+			}
+		],
+		"name": "addModerator",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "id",
+				"type": "string"
+			}
+		],
+		"name": "deactivateParty",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "adr",
+				"type": "address"
+			}
+		],
+		"name": "deactivateStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "id",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "editPartyName",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "reset",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "partyId",
+				"type": "string"
+			}
+		],
+		"name": "vote",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "evaluate",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "parties",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "id",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "votes",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "active",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
+</script>
+<style>
+	.vCanvas {
+		width: 90%;
+		max-width:50em;
+		-webkit-box-shadow: inset 0px 0px 18px -6px rgba(0,0,0,1);
+		-moz-box-shadow: inset 0px 0px 18px -6px rgba(0,0,0,1);
+		box-shadow: inset 0px 0px 18px -6px rgba(0,0,0,1);
+		padding: 1em;
+		margin: 0.25em;
+		display: inline-block;
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	.vInfo {
+		width:95%;
+		margin: 0.5em;
+		padding: 0.333em;
+		border: 0.0333em solid black;
+		background-color: white;
+		border-radius: 0.25em;
+		display: inline-block
+	}
+	.vLog {
+		margin: 0.333em;
+		padding: 0.44444em;
+		border: 0.033333em solid black;
+		background-color: #a3ffe0;
+		border-radius: 0.5em;
+		color: black;
+		display: inline-block
+	}
+	.vWrapper {
+		overflow: hidden;
+		margin: 0.25em;
+		padding: 0.66666em;
+		background-color: lightblue;
+		color: black;
+		align-content: center;
+	}
+	.vWrapper input, select{
+		width: 100%;
+		margin: 0.4444444em;
+		padding: 0.222222em;
+		
+	}
+	.vWrapper button {
+	  background-color: lightgreen;
+	  border-radius: 0.25em;
+	  color: black;
+	  margin: 0.444444em;
+	  padding: 0.44444em;
+	  text-align: center;
+	  text-decoration: none;
+	  display: inline-block;
+	  font-size: 16px;
+	}
+	.vWrapper button :hover {
+	  background-color: #4CAF50;
+	  color: white;
+	}
+	.vShadow {
+		-webkit-box-shadow: 0px 0px 6px -2px rgba(0,0,0,1);
+		-moz-box-shadow: 0px 0px 6px -2px rgba(0,0,0,1);
+		box-shadow: 0px 0px 6px -2px rgba(0,0,0,1);
+	}
+	.vLine{
+		border-bottom: 0.055555em solid black;
+		width: 100%; height: 0.1em;
+		display: block;
+	}
+</style>
+
+
+
+<div class="vCanvas">
+	<div STYLE="text-align: center;">
+		<a onclick="switchGerman()" href="javascript:void(0);">Deutsch</a>
+		<a onclick="switchEnglish()" href="javascript:void(0);">English</a>
+	</div>
+	<div class="vWrapper">
+		<div class="vInfo vShadow" id="infoField">
+			<b>Info:</b>
+			</br></br>
+				Welcome to the FH-Voting Blockchain Interface!
+			</br></br>
+				In the Dropdown-Menu below, you may choose which Blockchain-Network you wish to connect to. The options are either our Main Network, or the Test-Network based on Rinkeby.
+			</br></br>
+				In the next field, enter the ethereum address which has been assigned to you. This is your identity with which you will cast your vote. 
+			</br></br>
+				The last field takes the address of the Voting-Contract. This address can be found below, make sure you verify that it is indeed correct!
+			</br></br>
+			<b>Contract Addresses:</b>
+			</br></br>
+				0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D
+		</div>
+	</div>
+	<div class="vWrapper">
+		<div style="width:70%; float:left; min-width:10em;">
+			<select id="NodeSelector">
+				<option value="https://mainnet.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
+					Main Net (infura API)
+				</option>
+				<option value="https://rinkeby.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
+					Rinkeby Test-Net (infura API)
+				</option>
+			</select>
+			</br>
+			<input id="AddressInput" placeholder="Your ethereum address"></input>
+			<input id="ContractAddress" placeholder="Vote contract address"></input>
+		</div>
+		<div style="float:right;">
+			<button onclick="connectToContract()" id="connectButton" class="vShadow">CONNECT</button></br>
+			<button onclick="clearHistory()" id="clearButton" class="vShadow">CLEAR</button>
+		</div>
+	</div>
+	<div class="vWrapper">
+		<b id="historyLabel">History:</b></br>
+		<div id="InfoBox" class="vLog vShadow"></div>
+	</div>
+</div>	
+
+<script src="web3.js-1.2.6\dist\web3.min.js"></script>
+
+<script>
+
+	let lang = "en"
+
+	function log(m){ document.getElementById("InfoBox").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
+	function logLine(){ document.getElementById("InfoBox").innerHTML += '</br><span class="vLine"></span>'; }
+	function clearHistory(){document.getElementById("InfoBox").innerHTML="";}
+
+	function switchEnglish()
+	{
+		lang = "en"
+		document.getElementById("historyLabel").innerText = "History";
+		document.getElementById("infoField").innerHTML = 
+			"Info:".bold()+
+			"</br></br>"+
+				"Welcome to the FH-Voting Blockchain Interface!"+
+			"</br></br>"+
+				"In the Dropdown-Menu below, you may choose which Blockchain-Network you wish to connect to. The options are either our Main Network, or the Test-Network based on Rinkeby."+
+			"</br></br>"+
+				"In the next field, enter the ethereum address which has been assigned to you. This is your identity with which you will cast your vote. "+
+			"</br></br>"+
+				"The last field takes the address of the Voting-Contract. This address can be found below, make sure you verify that it is indeed correct!"+
+			"</br></br>"+
+			"Contract Addresses:".bold()+
+			"</br></br>"+
+				"0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D"+"<br>"+
+				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>";
+
+		document.getElementById("connectButton").textContent = "CONNECT";
+		document.getElementById("clearButton").textContent = "CLEAR";
+		document.getElementById("AddressInput").placeholder = "Your ethereum address";
+		document.getElementById("ContractAddress").placeholder = "Vote contract address";
+	}
+
+	function switchGerman()
+	{
+		lang = "de"
+		document.getElementById("historyLabel").innerText = "Verlauf";
+		document.getElementById("infoField").innerHTML = 
+			"Info:".bold()+
+			"</br></br>"+
+				"Wilkommen im FH-Voting Blockchain Interface!"+
+			"</br></br>"+
+				"Im Menü unterhalb wählen Sie, auf welcher Blockchain Sie abstimmen möchten. Die Optionen sind entweder das Hauptnetzwerk, oder das Rinkeby-Testnetzwerk."+
+			"</br></br>"+
+				"Darunter geben Sie die Ihnen zugeteilte Ethereum-Adresse ein. Diese repräsentiert Ihre Identität mit welcher Sie Ihre Stimme abgeben."+
+			"</br></br>"+
+				"Im letzten Feld geben Sie die Adresse des Wahl-Contracts ein, bitte überprüfen Sie dessen Richtigkeit!"+
+			"</br></br>"+
+			"Contract Adressen:".bold()+
+			"</br></br>"+
+				"0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D"+"<br>"+
+				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>";;
+		
+		document.getElementById("connectButton").textContent = "VERBINDEN";
+		document.getElementById("clearButton").textContent = "VERLAUF LÖSCHEN";
+		document.getElementById("AddressInput").placeholder = "Ihre Ethereum Adresse";
+		document.getElementById("ContractAddress").placeholder = "Wahl-Contract Adresse";
+	}
+
+	function _l(versions){
+		switch(lang) {
+			case "en": return versions[0]
+			case "de": return versions[1]
+		}
+	}
+
+	function connectToContract()
+	{
+		var errorOccurred = false;
+		if(document.getElementById("ContractAddress").value.trim()===""){
+			log(`
+			<b style="color: #A00000">
+				`+_l([
+						"ERROR! Please enter the voting contract address!",
+						"FEHLER! Bitte geben Sie die Contract-Adresse ein."
+				])+`
+			</b></br>
+			`)
+			errorOccurred = true;
+		}
+		if (document.getElementById("AddressInput").value.trim()==="") {
+			log(`
+			<b style="color: #A00000">
+				`+_l([
+						"ERROR! Please enter your address!",
+						"FEHLER! Bitte geben Sie Ihre Ethereum-Adresse ein."
+					])+`
+			</b></br>
+			`)
+			errorOccurred = true;
+		}
+		if (!errorOccurred) {
+			log(`
+			`+_l(["Your choice","Ihre Wahl:"])+`: </br>
+			<div style="margin-right: 1em;">
+				<select id = "PartySelector">
+					<option value="p1">Party 1</option>
+					<option value="p2">Party 2</option>
+					<option value="p3">Party 3</option>
+				</select>
+				<button onclick="submitVote()" style="float: right;">`+_l(["SUBMIT VOTE", "ABSTIMMEN"])+`</button>
+				<div class="vInfo">
+					Party 1: ...blablabla...</br>
+					Party 2: ...blablablabla...</br>
+				</div>
+			</div>
+			`)
+		}
+
+			
+			
+	}
+	
+	function submitVote()
+	{
+		var selector = document.getElementById("PartySelector");
+		var party = selector.options[selector.selectedIndex].value.trim();
+		var partyString = selector.options[selector.selectedIndex].text.trim();
+		var address = document.getElementById("AddressInput");
+		var verify = confirm(
+				_l([
+					"Casting your vote is final. Do you wish to vote for " + partyString + "?",
+					"Ihre Stimme lässt sich hinterher nicht mehr ändern. Stimmen Sie für " + partyString + "?"
+				])
+		);
+
+		if (!verify) { return; } // VERIFICATION!
+
+		web3 = getWeb3Connection();
+
+		log(_l(["...establishing contract connection...", "...Verbindung mit dem Contract wird hergestellt..."]));
+
+		var contract = new web3.eth.Contract(ABI, document.getElementById("ContractAddress").value.trim());// Takes API and address
+
+		log(_l(["...sending vote...", "...Stimme wird abgegeben..."]));
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		contract.methods.vote(partyString)
+		.send({
+			from: address,
+			//gas: 150000,
+			//gasPrice: '3000000'
+		},function(error, transactionHash){ log(error) }
+		);
+		// Check how many votes:
+		log(_l(["Number of votes for your party:","Anzahl der Stimmen für Ihre Partei:"])+"<br>"+
+				contract.methods.parties(partyString)
+				.send({
+					from: address,
+					//gas: 1500000//,
+					//gasPrice: '30000000000000'
+				},function(error, transactionHash){ log(error) }
+		));
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		log(_l(["Success!", "Erfolg!"]));
+
+	}
+	
+	function getWeb3Connection()
+	{
+		log(_l(["...getting web3.js instance...", "...web3.js Instanz wird aufbereitet..."]))
+		var web3
+		if(window.web3==="legacy"){
+			log(_l([
+					"WARNING: Legacy mode detected! Please switch to neweset MetaMask version!",
+				"ACTHUNG: Sie befinden sich im Legacy-Modus! Bitte wechseln Sie zur neusten MetaMask Version!"
+			]))
+			var selector = document.getElementById("NodeSelector");
+			var rpcURL = selector.options[selector.selectedIndex].value;
+			web3 = new Web3(new Web3.providers.HttpProvider(rpcURL))
+		} else {
+			web3 = window.web3;
+		}
+		return web3;
+	}
+
+	window.addEventListener('load', async () => {
+		if (window.ethereum) {// Modern dapp browsers...
+			window.web3 = new Web3(ethereum);
+			try { // Request account access if needed
+				await ethereum.enable();// Acccounts now exposed
+			} catch (error) {
+				alert(_l([
+						"Account access denied! :(",
+						"Account Zugriff verwehrt! :("
+				]));// User denied account access...
+			}
+		} else if (window.web3) {// Legacy :
+			alert(_l([
+					'Legacy browser detected. You should consider trying newest version of MetaMask!',
+					'Veralteter Browser erkannt. Probieren Sie sie neuste MetaMask version!'
+			]));
+			window.web3 = "legacy"
+		} else { // Full legacy : (Never go full legacy)
+			alert(_l([
+					'Non-Ethereum browser detected. You should consider trying MetaMask!',
+					'Ethereum inkompatibler Browser erkannt! Probiern Sie MetaMask!'
+			]));
+		}
+	});
+
+</script>
+		
+
+
+
+
