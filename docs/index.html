@@ -406,7 +406,7 @@ ABI = [
 		var selector = document.getElementById("PartySelector");
 		var party = selector.options[selector.selectedIndex].value.trim();
 		var partyString = selector.options[selector.selectedIndex].text.trim();
-		var address = document.getElementById("AddressInput");
+		var address = document.getElementById("AddressInput").value.trim();
 		var verify = confirm(
 				_l([
 					"Casting your vote is final. Do you wish to vote for " + partyString + "?",
