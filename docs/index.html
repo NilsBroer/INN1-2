@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <meta charset="UTF-8">
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- ! SMART CONTRACT ABI !  -->
+<!----------------------------->
 <script>
 ABI = [
 	{
@@ -165,10 +168,69 @@ ABI = [
 	}
 ]
 </script>
+
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- ! CSS !  -->
+<!-------------->
+
 <style>
+	/*Media Querys:*/
+	@media (max-width: 840px)
+	{
+		.vDynamicSideMargin {
+			margin-right: 0%;
+			margin-left: 0%;
+		}
+		.vDynamicWidth {
+			width: 100%
+		}
+	}
+	/*---*/
+	@media (min-width: 840px)
+	{
+		.vDynamicSideMargin {
+			margin-right: 7%;
+			margin-left: 7%;
+		}
+		.vDynamicWidth {
+			width: 90%
+		}
+	}
+	/*---*/
+	@media (min-width: 1041px)
+	{
+		.vDynamicSideMargin {
+			margin-right: 13%;
+			margin-left: 13%;
+		}
+		.vDynamicWidth {
+			width: 80%
+		}
+	}
+	/*---*/
+	@media (min-width: 1440px)
+	{
+		.DynamicSideMargin {
+			margin-right: 17%;
+			margin-left: 17%;
+		}
+		.vDynamicWidth {
+			width: 66%
+		}
+	}
+	/*---*/
+	@media (min-width: 2000px) {
+		.vDynamicSideMargin {
+			margin-right: 28%;
+			margin-left: 28%;
+		}
+		.vDynamicWidth {
+			width: 50%
+		}
+	}
+	/*---*/
+
 	.vCanvas {
-		width: 90%;
-		max-width:50em;
 		-webkit-box-shadow: inset 0px 0px 18px -6px rgba(0,0,0,1);
 		-moz-box-shadow: inset 0px 0px 18px -6px rgba(0,0,0,1);
 		box-shadow: inset 0px 0px 18px -6px rgba(0,0,0,1);
@@ -236,57 +298,64 @@ ABI = [
 	}
 </style>
 
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- ! HTML !  -->
+<!--------------->
 
-
-<div class="vCanvas">
-	<div STYLE="text-align: center;">
-		<a onclick="switchGerman()" href="javascript:void(0);">Deutsch</a>
-		<a onclick="switchEnglish()" href="javascript:void(0);">English</a>
-	</div>
-	<div class="vWrapper">
-		<div class="vInfo vShadow" id="infoField">
-			<b>Info:</b>
-			</br></br>
+<div class="vDynamicSideMargin">
+	<div class="vCanvas">
+		<div STYLE="text-align: center;">
+			<a onclick="switchGerman()" href="javascript:void(0);">Deutsch</a>
+			<a onclick="switchEnglish()" href="javascript:void(0);">English</a>
+		</div>
+		<div class="vWrapper">
+			<div class="vInfo vShadow" id="infoField">
+				<b>Info:</b>
+				</br></br>
 				Welcome to the FH-Voting Blockchain Interface!
-			</br></br>
+				</br></br>
 				In the Dropdown-Menu below, you may choose which Blockchain-Network you wish to connect to. The options are either our Main Network, or the Test-Network based on Rinkeby.
-			</br></br>
-				In the next field, enter the ethereum address which has been assigned to you. This is your identity with which you will cast your vote. 
-			</br></br>
+				</br></br>
+				In the next field, enter the ethereum address which has been assigned to you. This is your identity with which you will cast your vote.
+				</br></br>
 				The last field takes the address of the Voting-Contract. This address can be found below, make sure you verify that it is indeed correct!
-			</br></br>
-			<b>Contract Addresses:</b>
-			</br></br>
+				</br></br>
+				<b>Contract Addresses:</b>
+				</br></br>
 				0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D
+			</div>
+		</div>
+		<div class="vWrapper">
+			<div style="width:70%; float:left; min-width:10em;">
+				<select id="NodeSelector">
+					<option value="https://mainnet.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
+						Main Net (infura API)
+					</option>
+					<option value="https://rinkeby.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
+						Rinkeby Test-Net (infura API)
+					</option>
+				</select>
+				</br>
+				<input id="AddressInput" placeholder="Your ethereum address"></input>
+				<input id="ContractAddress" placeholder="Vote contract address"></input>
+			</div>
+			<div style="float:right;">
+				<button onclick="connectToContract()" id="connectButton" class="vShadow">CONNECT</button></br>
+				<button onclick="clearHistory()" id="clearButton" class="vShadow">CLEAR</button>
+			</div>
+		</div>
+		<div class="vWrapper">
+			<b id="historyLabel">History:</b></br>
+			<div id="InfoBox" class="vLog vShadow"></div>
 		</div>
 	</div>
-	<div class="vWrapper">
-		<div style="width:70%; float:left; min-width:10em;">
-			<select id="NodeSelector">
-				<option value="https://mainnet.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
-					Main Net (infura API)
-				</option>
-				<option value="https://rinkeby.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
-					Rinkeby Test-Net (infura API)
-				</option>
-			</select>
-			</br>
-			<input id="AddressInput" placeholder="Your ethereum address"></input>
-			<input id="ContractAddress" placeholder="Vote contract address"></input>
-		</div>
-		<div style="float:right;">
-			<button onclick="connectToContract()" id="connectButton" class="vShadow">CONNECT</button></br>
-			<button onclick="clearHistory()" id="clearButton" class="vShadow">CLEAR</button>
-		</div>
-	</div>
-	<div class="vWrapper">
-		<b id="historyLabel">History:</b></br>
-		<div id="InfoBox" class="vLog vShadow"></div>
-	</div>
-</div>	
+</div>
+
+<!--------------------------------------------------------------------------------------------------------------------->
+<!-- ! CODE !  -->
+<!--------------->
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
-
 <script>
 
 	let lang = "en"
