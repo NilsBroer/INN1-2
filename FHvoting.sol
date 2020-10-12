@@ -19,8 +19,8 @@ contract FHVoting
     }
     
     //Mappings
-    address administrator;
-    mapping(address => address) moderators;
+    address public administrator;
+    mapping(address => address) public moderators;
     mapping(address => Student) students;
     mapping(string => Party) public parties;
     
