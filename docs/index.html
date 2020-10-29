@@ -6,166 +6,104 @@
 <!----------------------------->
 <script>
 ABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "id",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			}
-		],
-		"name": "activateParty",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "adr",
-				"type": "address"
-			}
-		],
-		"name": "activateStudent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "moderator",
-				"type": "address"
-			}
-		],
-		"name": "addModerator",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "id",
-				"type": "string"
-			}
-		],
-		"name": "deactivateParty",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "adr",
-				"type": "address"
-			}
-		],
-		"name": "deactivateStudent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "id",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			}
-		],
-		"name": "editPartyName",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "reset",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "partyId",
-				"type": "string"
-			}
-		],
-		"name": "vote",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [],
-		"name": "evaluate",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"name": "parties",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "id",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "votes",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "active",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
+		{
+			"inputs": [
+				{"internalType": "string", "name": "id", "type": "string"},
+				{"internalType": "string", "name": "name", "type": "string"}
+			],
+			"name": "activateParty",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [{"internalType": "address", "name": "adr", "type": "address"}],
+			"name": "activateStudent",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [{"internalType": "address", "name": "moderator", "type": "address"}],
+			"name": "addModerator",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [{"internalType": "string", "name": "id", "type": "string"}],
+			"name": "deactivateParty",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [{"internalType": "address", "name": "adr", "type": "address"}],
+			"name": "deactivateStudent",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{"internalType": "string", "name": "id", "type": "string"},
+				{"internalType": "string", "name": "name", "type": "string"}
+			],
+			"name": "editPartyName",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "reset",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [{"internalType": "string", "name": "partyId", "type": "string"}],
+			"name": "vote",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		},
+		{
+			"inputs": [],
+			"name": "administrator",
+			"outputs": [{"internalType": "address", "name": "", "type": "address"}],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "evaluate",
+			"outputs": [{"internalType": "string", "name": "", "type": "string"}],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [{"internalType": "address", "name": "", "type": "address"}],
+			"name": "moderators",
+			"outputs": [{"internalType": "address", "name": "", "type": "address"}],
+			"stateMutability": "view", "type": "function"
+		},
+		{
+			"inputs": [{"internalType": "string", "name": "", "type": "string"}],
+			"name": "parties",
+			"outputs": [
+				{"internalType": "string", "name": "id", "type": "string"},
+				{"internalType": "string", "name": "name", "type": "string"},
+				{"internalType": "uint256", "name": "votes", "type": "uint256"},
+				{"internalType": "bool", "name": "active", "type": "bool"}
+			],
+			"stateMutability": "view", "type": "function"
+		}
 ]
 </script>
 
@@ -382,7 +320,8 @@ ABI = [
 			"Contract Addresses:".bold()+
 			"</br></br>"+
 				"0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D"+"<br>"+
-				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>";
+				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>" +
+				"0x60a7B9353086D670F6459218e377F6C31B1d43DC"+"<br>";
 
 		document.getElementById("connectButton").textContent = "CONNECT";
 		document.getElementById("clearButton").textContent = "CLEAR";
@@ -408,7 +347,8 @@ ABI = [
 			"Contract Adressen:".bold()+
 			"</br></br>"+
 				"0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D"+"<br>"+
-				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>";;
+				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>" +
+				"0x60a7B9353086D670F6459218e377F6C31B1d43DC"+"<br>";
 		
 		document.getElementById("connectButton").textContent = "VERBINDEN";
 		document.getElementById("clearButton").textContent = "VERLAUF LÖSCHEN";
@@ -422,6 +362,14 @@ ABI = [
 			case "de": return versions[1]
 		}
 	}
+
+	// Backend :
+
+	let _contract = null;
+	let _web3 = null;
+	let _administrator = null;
+	let _user = null;
+	let _userIsAdmin = false;
 
 	function connectToContract()
 	{
@@ -448,26 +396,86 @@ ABI = [
 			`)
 			errorOccurred = true;
 		}
-		if (!errorOccurred) {
+
+		_web3 = getWeb3Connection();
+
+		try {
+			_contract = new web3.eth.Contract(ABI, document.getElementById("ContractAddress").value.trim());// Takes API and address
+		} catch (e) {
 			log(`
-			`+_l(["Your choice","Ihre Wahl:"])+`: </br>
-			<div style="margin-right: 1em;">
-				<select id = "PartySelector">
-					<option value="p1">Party 1</option>
-					<option value="p2">Party 2</option>
-					<option value="p3">Party 3</option>
-				</select>
-				<button onclick="submitVote()" style="float: right;">`+_l(["SUBMIT VOTE", "ABSTIMMEN"])+`</button>
-				<div class="vInfo">
-					Party 1: ...blablabla...</br>
-					Party 2: ...blablablabla...</br>
-				</div>
-			</div>
-			`)
+			<b style="color: #A00000">
+				`+_l([
+				"ERROR! Failed to connect to contract!</br>Message :</br> '"+e+"'",
+				"Fehler! Verbindung zum Contract ist fehlgeschlagen!</br>Nachricht :</br> '"+e+"'"
+			])+`
+			</b></br>
+			`);
+			errorOccurred = true;
+		}
+		if ( _contract != null && !errorOccurred ) {
+			log(_l([
+				"Connection established successfully!",
+				"Verbindung erfolgreich hergestellt!"
+			]))
 		}
 
-			
-			
+
+		_contract.methods.administrator().call()
+			.then( val => {
+				_administrator = val;
+				_user = document.getElementById("AddressInput").value.trim();
+				_userIsAdmin = _user === _administrator;
+				if ( _userIsAdmin ) {
+					log(_l([
+						"Hello administrator!",
+						"Hallo Administrator!"
+					]));
+				} else {
+					log(_l([
+						"The administrator of this contract is : "+_administrator,
+						"Der Administrator dieses Contracts ist : "+_administrator
+					]));
+				}
+				if (!errorOccurred) {
+
+					//_contract.methods.parties().call( // WHY IS THIS NOT WORKING?
+					//		"1",function(err,res) {
+					//		log(res)
+					//});
+					_contract.methods.parties("1").call() // WHY IS THIS NOT WORKING?
+					 	.then( val => log(val) )
+					 	.catch( err => log(err.message) );
+
+					log(`
+							`+_l(["Your choice","Ihre Wahl:"])+`: </br>
+							<div style="margin-right: 1em;">
+								<select id = "PartySelector">
+									<option value="p1">Party 1</option>
+									<option value="p2">Party 2</option>
+									<option value="p3">Party 3</option>
+								</select>
+								<button onclick="submitVote()" style="float: right;">`+_l(["SUBMIT VOTE", "ABSTIMMEN"])+`</button>
+								<div class="vInfo">
+									Party 1: ...blablabla...</br>
+									Party 2: ...blablablabla...</br>
+								</div>
+							</div>
+					`);
+				}
+			})
+			.catch(
+					err => {
+						log(`
+							<b style="color: #A00000">
+							`+_l([
+									"ERROR! Failed to fetch administrator address from contract!</br>Message :</br> '"+err.message+"'",
+									"Fehler! Administrator Addresse nicht abrufbar!</br>Nachricht :</br> '"+err.message+"'"
+								])+`
+							</b></br>
+						`);
+					}
+			);
+
 	}
 	
 	function submitVote()
@@ -485,11 +493,9 @@ ABI = [
 
 		if (!verify) { return; } // VERIFICATION!
 
-		web3 = getWeb3Connection();
+		//log(_l(["...establishing contract connection...", "...Verbindung mit dem Contract wird hergestellt..."]));
 
-		log(_l(["...establishing contract connection...", "...Verbindung mit dem Contract wird hergestellt..."]));
-
-		var contract = new web3.eth.Contract(ABI, document.getElementById("ContractAddress").value.trim());// Takes API and address
+		var contract = _contract; //new web3.eth.Contract(ABI, document.getElementById("ContractAddress").value.trim());// Takes API and address
 
 		log(_l(["...sending vote...", "...Stimme wird abgegeben..."]));
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
