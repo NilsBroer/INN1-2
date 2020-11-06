@@ -248,19 +248,6 @@ ABI = [
 		</div>
 		<div class="vWrapper">
 			<div class="vInfo vShadow" id="infoField">
-				<b>Info:</b>
-				</br></br>
-				Welcome to the FH-Voting Blockchain Interface!
-				</br></br>
-				In the Dropdown-Menu below, you may choose which Blockchain-Network you wish to connect to. The options are either our Main Network, or the Test-Network based on Rinkeby.
-				</br></br>
-				In the next field, enter the ethereum address which has been assigned to you. This is your identity with which you will cast your vote.
-				</br></br>
-				The last field takes the address of the Voting-Contract. This address can be found below, make sure you verify that it is indeed correct!
-				</br></br>
-				<b>Contract Addresses:</b>
-				</br></br>
-				0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D
 			</div>
 		</div>
 		<div class="vWrapper">
@@ -298,6 +285,11 @@ ABI = [
 
 	let lang = "en"
 
+	window.onload = function() {
+		if ( lang === "en" ) switchEnglish();
+		else switchGerman();
+	};
+
 	function log(m){ document.getElementById("InfoBox").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
 	function logLine(){ document.getElementById("InfoBox").innerHTML += '</br><span class="vLine"></span>'; }
 	function clearHistory(){document.getElementById("InfoBox").innerHTML="";}
@@ -318,10 +310,7 @@ ABI = [
 				"The last field takes the address of the Voting-Contract. This address can be found below, make sure you verify that it is indeed correct!"+
 			"</br></br>"+
 			"Contract Addresses:".bold()+
-			"</br></br>"+
-				"0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D"+"<br>"+
-				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>" +
-				"0x60a7B9353086D670F6459218e377F6C31B1d43DC"+"<br>";
+			"</br></br>"+ "0x60a7B9353086D670F6459218e377F6C31B1d43DC"+"<br>";
 
 		document.getElementById("connectButton").textContent = "CONNECT";
 		document.getElementById("clearButton").textContent = "CLEAR";
@@ -345,10 +334,7 @@ ABI = [
 				"Im letzten Feld geben Sie die Adresse des Wahl-Contracts ein, bitte überprüfen Sie dessen Richtigkeit!"+
 			"</br></br>"+
 			"Contract Adressen:".bold()+
-			"</br></br>"+
-				"0xd674cBe428EAd9edad3cB906D27d713Fa3134F6D"+"<br>"+
-				"0xC0d462B0067B64D97208bFaAfaB155EdF7F23a2e"+"<br>" +
-				"0x60a7B9353086D670F6459218e377F6C31B1d43DC"+"<br>";
+			"</br></br>"+ "0x60a7B9353086D670F6459218e377F6C31B1d43DC"+"<br>";
 		
 		document.getElementById("connectButton").textContent = "VERBINDEN";
 		document.getElementById("clearButton").textContent = "VERLAUF LÖSCHEN";
