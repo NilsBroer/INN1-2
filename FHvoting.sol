@@ -27,7 +27,7 @@ contract FHVoting
     //Iterators
     mapping(uint256 => address) s_i;
     uint256 s = 0;
-    mapping(uint256 => string) p_i;
+    mapping(uint256 => string) public p_i;
     uint256 p = 0;
 
     //Constructor
