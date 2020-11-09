@@ -25,6 +25,8 @@ contract FHVoting
     mapping(string => Party) public parties;
     
     //Iterators
+    mapping(uint256 => address) m_i;
+    uint256 m = 1;
     mapping(uint256 => address) s_i;
     uint256 s = 0;
     mapping(uint256 => string) public p_i;
@@ -35,6 +37,7 @@ contract FHVoting
     {
         administrator = msg.sender;
         moderators[administrator] = administrator;
+        m_i[0] = administrator;
         //Already known wallet-addresses can be added like this:
         //moderators[full-address] = full-address;
     }
@@ -62,6 +65,8 @@ contract FHVoting
     function addModerator(address moderator) public administrator_only
     {
         moderators[moderator] = moderator;
+        m_i[m] = moderator;
+        m++;
     }
     
     function activateStudent(address adr) public moderator_only
