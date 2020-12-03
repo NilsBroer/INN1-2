@@ -387,7 +387,7 @@ ABI = [
 					<div class="col-sm-12 col-md-6 col-lg-5">
 						<span>Address:</span>
 						<select id="address_selector">
-							<option value="">
+							<option value="" id="select_address_option_field">
 								Select an address!
 							</option>
 						</select>
@@ -402,7 +402,7 @@ ABI = [
 					<div class="col-sm-12 col-md-6 col-lg-5">
 						<span>Contract:</span>
 						<select id="contract_selector">
-							<option value="">
+							<option value="" id="select_contract_option_field">
 								Select a contract!
 							</option>
 							<option value="0x60a7B9353086D670F6459218e377F6C31B1d43DC">
@@ -478,6 +478,9 @@ ABI = [
 		document.getElementById("clear_button").textContent = "CLEAR";
 		document.getElementById("address_input").placeholder = "Your ethereum address";
 		document.getElementById("contract_input").placeholder = "Vote contract address";
+		document.getElementById("begin_button").textContent = "GOT IT!";
+		document.getElementById("select_address_option_field").textContent = "Select an address!"
+		document.getElementById("select_contract_option_field").textContent = "Select a contract!"
 	}
 
 	function switchGerman()
@@ -502,6 +505,9 @@ ABI = [
 		document.getElementById("clear_button").textContent = "VERLAUF LÖSCHEN";
 		document.getElementById("address_input").placeholder = "Ihre Ethereum Adresse";
 		document.getElementById("contract_input").placeholder = "Wahl-Contract Adresse";
+		document.getElementById("begin_button").textContent = "VERSTANDEN!";
+		document.getElementById("select_address_option_field").textContent = "Wählen Sie eine Adresse!"
+		document.getElementById("select_contract_option_field").textContent = "Wählen Sie einen Contract!"
 	}
 
 	function _l(versions){
