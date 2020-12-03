@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <meta charset="UTF-8">
+<!-----------------------------------BOOTSTRAP------------------------------------------------------------------------->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<script src="js/bootstrap.min.js"></script>
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- ! SMART CONTRACT ABI !  -->
 <!----------------------------->
@@ -357,36 +360,77 @@ ABI = [
 
 <div class="vDynamicSideMargin">
 	<div class="vCanvas">
-		<div STYLE="text-align: center;">
+		<div style="text-align: center;">
 			<a onclick="switchGerman()" href="javascript:void(0);">Deutsch</a>
 			<a onclick="switchEnglish()" href="javascript:void(0);">English</a>
 		</div>
 		<div class="vWrapper">
-			<div class="vInfo vShadow" id="infoField">
+			<div class="vInfo vShadow" id="info_field">
+			</div>
+			<button onclick="connect()" id="begin_button" class="vShadow">BEGIN</button></br>
+		</div>
+		<div id="configuration_box" class="vWrapper" style="display: none;">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col-lg-12">
+						<span>Node: </span>
+						<select id="node_selector">
+							<option value="https://mainnet.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
+								Main Net (infura API)
+							</option>
+							<option value="https://rinkeby.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
+								Rinkeby Test-Net (infura API)
+							</option>
+						</select>
+						</br>
+					</div>
+					<div class="col-sm-12 col-md-6 col-lg-5">
+						<span>Address:</span>
+						<select id="address_selector">
+							<option value="">
+								Select an address!
+							</option>
+						</select>
+						<input id="address_input" placeholder="Your ethereum address">
+						<script>
+							let select = document.querySelector('#address_selector');
+							select.addEventListener('change',function(){
+								document.getElementById("address_input").value = select.options[select.selectedIndex].value;
+							});
+						</script>
+					</div>
+					<div class="col-sm-12 col-md-6 col-lg-5">
+						<span>Contract:</span>
+						<select id="contract_selector">
+							<option value="">
+								Select a contract!
+							</option>
+							<option value="0x60a7B9353086D670F6459218e377F6C31B1d43DC">
+								1: 0x60a7B9353086D670F6459218e377F6C31B1d43DC
+							</option>
+							<option value="0xD70b97f75b4c371d44Db05a116EcAF67Dd9a8355">
+								2: 0xD70b97f75b4c371d44Db05a116EcAF67Dd9a8355
+							</option>
+						</select>
+						<input id="contract_input" placeholder="Vote contract address">
+						<script>
+							let contractSelect = document.querySelector('#contract_selector');
+							contractSelect.addEventListener('change',function(){
+								document.getElementById("contract_input").value =
+										contractSelect.options[contractSelect.selectedIndex].value;
+							});
+						</script>
+					</div>
+					<div class="col-sm-12 col-md-12 col-lg-2">
+						<button onclick="connectToContract()" id="connect_button" class="vShadow">CONNECT</button></br>
+						<button onclick="clearHistory()" id="clear_button" class="vShadow">CLEAR</button>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="vWrapper">
-			<div style="width:70%; float:left; min-width:10em;">
-				<select id="NodeSelector">
-					<option value="https://mainnet.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
-						Main Net (infura API)
-					</option>
-					<option value="https://rinkeby.infura.io/v3/4e8efa5c183249169020ef5302bdb10e">
-						Rinkeby Test-Net (infura API)
-					</option>
-				</select>
-				</br>
-				<input id="AddressInput" placeholder="Your ethereum address"></input>
-				<input id="ContractAddress" placeholder="Vote contract address"></input>
-			</div>
-			<div style="float:right;">
-				<button onclick="connectToContract()" id="connectButton" class="vShadow">CONNECT</button></br>
-				<button onclick="clearHistory()" id="clearButton" class="vShadow">CLEAR</button>
-			</div>
-		</div>
-		<div class="vWrapper">
-			<b id="historyLabel">History:</b></br>
-			<div id="InfoBox" class="vLog vShadow vDynamicWidth"></div>
+		<div id="history_box" class="vWrapper" style="display: none">
+			<b id="history_label">History:</b></br>
+			<div id="info_box" class="vLog vShadow vDynamicWidth"></div>
 		</div>
 	</div>
 </div>
@@ -401,22 +445,22 @@ ABI = [
 		await new Promise(resolve => setTimeout(resolve, ms));
 	}
 
-	let lang = "en"
+	let _lang = "en"
 
 	window.onload = function() {
-		if ( lang === "en" ) switchEnglish();
+		if ( _lang === "en" ) switchEnglish();
 		else switchGerman();
 	};
 
-	function log(m){ document.getElementById("InfoBox").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
-	function logLine(){ document.getElementById("InfoBox").innerHTML += '</br><span class="vLine"></span>'; }
-	function clearHistory(){document.getElementById("InfoBox").innerHTML="";}
+	function log(m){ document.getElementById("info_box").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
+	function logLine(){ document.getElementById("info_box").innerHTML += '</br><span class="vLine"></span>'; }
+	function clearHistory(){document.getElementById("info_box").innerHTML="";}
 
 	function switchEnglish()
 	{
-		lang = "en"
-		document.getElementById("historyLabel").innerText = "History";
-		document.getElementById("infoField").innerHTML = 
+		_lang = "en"
+		document.getElementById("history_label").innerText = "History";
+		document.getElementById("info_field").innerHTML = 
 			"Info:".bold()+
 			"</br></br>"+
 				"Welcome to the FH-Voting Blockchain Interface!"+
@@ -428,21 +472,19 @@ ABI = [
 				"The last field takes the address of the Voting-Contract. This address can be found below, make sure you verify that it is indeed correct!"+
 			"</br></br>"+
 			"Contract Addresses:".bold()+
-			"</br></br>"+
-				"0x60a7B9353086D670F6459218e377F6C31B1d43DC"+
-				"<br>" + "0xD70b97f75b4c371d44Db05a116EcAF67Dd9a8355";
+			"</br></br>";
 
-		document.getElementById("connectButton").textContent = "CONNECT";
-		document.getElementById("clearButton").textContent = "CLEAR";
-		document.getElementById("AddressInput").placeholder = "Your ethereum address";
-		document.getElementById("ContractAddress").placeholder = "Vote contract address";
+		document.getElementById("connect_button").textContent = "CONNECT";
+		document.getElementById("clear_button").textContent = "CLEAR";
+		document.getElementById("address_input").placeholder = "Your ethereum address";
+		document.getElementById("contract_input").placeholder = "Vote contract address";
 	}
 
 	function switchGerman()
 	{
-		lang = "de"
-		document.getElementById("historyLabel").innerText = "Verlauf";
-		document.getElementById("infoField").innerHTML = 
+		_lang = "de"
+		document.getElementById("history_label").innerText = "Verlauf";
+		document.getElementById("info_field").innerHTML = 
 			"Info:".bold()+
 			"</br></br>"+
 				"Wilkommen im FH-Voting Blockchain Interface!"+
@@ -454,16 +496,16 @@ ABI = [
 				"Im letzten Feld geben Sie die Adresse des Wahl-Contracts ein, bitte überprüfen Sie dessen Richtigkeit!"+
 			"</br></br>"+
 			"Contract Adressen:".bold()+
-			"</br></br>"+ "0x60a7B9353086D670F6459218e377F6C31B1d43DC"+"<br>" + "0xD70b97f75b4c371d44Db05a116EcAF67Dd9a8355";
+			"</br></br>";
 		
-		document.getElementById("connectButton").textContent = "VERBINDEN";
-		document.getElementById("clearButton").textContent = "VERLAUF LÖSCHEN";
-		document.getElementById("AddressInput").placeholder = "Ihre Ethereum Adresse";
-		document.getElementById("ContractAddress").placeholder = "Wahl-Contract Adresse";
+		document.getElementById("connect_button").textContent = "VERBINDEN";
+		document.getElementById("clear_button").textContent = "VERLAUF LÖSCHEN";
+		document.getElementById("address_input").placeholder = "Ihre Ethereum Adresse";
+		document.getElementById("contract_input").placeholder = "Wahl-Contract Adresse";
 	}
 
 	function _l(versions){
-		switch(lang) {
+		switch(_lang) {
 			case "en": return versions[0]
 			case "de": return versions[1]
 		}
@@ -476,11 +518,33 @@ ABI = [
 	let _administrator = null;
 	let _user = null;
 	let _userIsAdmin = false;
+	let _userAccounts = [];
+
+	function connect() {
+		// Getting web3 connection instance:
+		_web3 = getWeb3Connection();
+		// Getting all accounts of the user:
+		_web3.eth.getAccounts((err, res) => {_userAccounts.push(res);});
+		// After some time (for account query) connect to contract:
+		setTimeout(function (){
+				// Optional: Clear all existing options first:
+				let select = document.getElementById("address_selector");
+				//select.innerHTML = "";
+				// Populate list with options:
+				for(var i=0; i < _userAccounts.length; i++) select.innerHTML +=
+						"<option value=\"" + _userAccounts[i] + "\">Account "+i+" : " + _userAccounts[i] + "</option>";
+
+				document.getElementById("configuration_box").style.display = '';
+				document.getElementById("begin_button").style.display = 'none';
+				document.getElementById("history_box").style.display = '';
+
+		}, 1000);
+	}
 
 	function connectToContract()
 	{
 		var errorOccurred = false;
-		if(document.getElementById("ContractAddress").value.trim()===""){
+		if(document.getElementById("contract_input").value.trim()===""){
 			log(`
 			<b style="color: #A00000">
 				`+_l([
@@ -491,7 +555,7 @@ ABI = [
 			`)
 			errorOccurred = true;
 		}
-		if (document.getElementById("AddressInput").value.trim()==="") {
+		if (document.getElementById("address_input").value.trim()==="") {
 			log(`
 			<b style="color: #A00000">
 				`+_l([
@@ -503,10 +567,10 @@ ABI = [
 			errorOccurred = true;
 		}
 
-		_web3 = getWeb3Connection();
+		if ( errorOccurred ) return;
 
 		try {
-			_contract = new web3.eth.Contract(ABI, document.getElementById("ContractAddress").value.trim());// Takes API and address
+			_contract = new web3.eth.Contract(ABI, document.getElementById("contract_input").value.trim());// Takes API and address
 		} catch (e) {
 			log(`
 			<b style="color: #A00000">
@@ -528,7 +592,7 @@ ABI = [
 		_contract.methods.administrator().call()
 			.then( val => {
 				_administrator = val;
-				_user = document.getElementById("AddressInput").value.trim();
+				_user = document.getElementById("address_input").value.trim();
 				_userIsAdmin = _user === _administrator;
 				if ( _userIsAdmin ) {
 					log(_l([
@@ -549,7 +613,7 @@ ABI = [
 					let trials = 10
 					while ( !errorOccurred && i < 10 ) {
 
-						_contract.methods.p_i(i).call() // WHY IS THIS NOT WORKING?
+						_contract.methods.p_i(i).call()
 								.then(partyIndex => {
 									console.log(i+". party, index : '" + partyIndex+"';");
 									_contract.methods.parties(partyIndex).call() // WHY IS THIS NOT WORKING?
@@ -598,24 +662,27 @@ ABI = [
 											'Loading trials successful!',
 											'Lade Versuche erfolgreich!'
 										]))
-									else log(_l([
-										'<b style="color: #A00000">ERROR! Unfinished loading trials : '+trials+'.</b>',
-										'<b style="color: #A00000">Fehler! Unvollständige Ladeversuche : '+trials+'.</b>'
-									]));
+									else {
+										log(_l([
+											'<b style="color: #A00000">ERROR! Unfinished loading trials : '+trials+'.</b>',
+											'<b style="color: #A00000">Fehler! Unvollständige Ladeversuche : '+trials+'.</b>'
+										]));
+										return;
+									}
 									let options = partyOptionList.join("");
 									let info = partyInfoList.join("<br>");
 
 									log(_l(["Your choice", "Ihre Wahl:"]) + `: </br>
-									<div style="margin-right: 1em;">
-										<select id = "PartySelector">
-											` + options + `
-										</select>
-										<button onclick="submitVote()" style="float: right;">` + _l(["SUBMIT VOTE", "ABSTIMMEN"]) + `</button>
-										<div class="vInfo">
-											` + info + `
+										<div style="margin-right: 1em;">
+											<select id = "PartySelector">
+												` + options + `
+											</select>
+											<button onclick="submitVote()" style="float: right;">` + _l(["SUBMIT VOTE", "ABSTIMMEN"]) + `</button>
+											<div class="vInfo">
+												` + info + `
+											</div>
 										</div>
-									</div>
-								`);
+									`);
 								},
 								5000
 						);
@@ -643,7 +710,7 @@ ABI = [
 		var party = selector.options[selector.selectedIndex].value.trim();
 		var partyString = selector.options[selector.selectedIndex].text.trim();
 		var partyIndex = selector.options[selector.selectedIndex].value.trim();
-		var address = document.getElementById("AddressInput").value.trim();
+		var address = document.getElementById("address_input").value.trim();
 		var verify = confirm(
 				_l([
 					"Casting your vote is final. Do you wish to vote for " + partyString + "?",
@@ -655,7 +722,7 @@ ABI = [
 
 		//log(_l(["...establishing contract connection...", "...Verbindung mit dem Contract wird hergestellt..."]));
 
-		var contract = _contract; //new web3.eth.Contract(ABI, document.getElementById("ContractAddress").value.trim());// Takes API and address
+		var contract = _contract; //new web3.eth.Contract(ABI, document.getElementById("contract_input").value.trim());// Takes API and address
 
 		log(_l(["...sending vote...", "...Stimme wird abgegeben..."]));
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -683,7 +750,7 @@ ABI = [
 					"WARNING: Legacy mode detected! Please switch to neweset MetaMask version!",
 				"ACTHUNG: Sie befinden sich im Legacy-Modus! Bitte wechseln Sie zur neusten MetaMask Version!"
 			]))
-			var selector = document.getElementById("NodeSelector");
+			var selector = document.getElementById("node_selector");
 			var rpcURL = selector.options[selector.selectedIndex].value;
 			web3 = new Web3(new Web3.providers.HttpProvider(rpcURL))
 		} else {
@@ -706,13 +773,13 @@ ABI = [
 		} else if (window.web3) {// Legacy :
 			alert(_l([
 					'Legacy browser detected. You should consider trying newest version of MetaMask!',
-					'Veralteter Browser erkannt. Probieren Sie sie neuste MetaMask version!'
+					'Veralteter Browser erkannt. Probieren Sie die neuste MetaMask version!'
 			]));
 			window.web3 = "legacy"
 		} else { // Full legacy : (Never go full legacy)
 			alert(_l([
 					'Non-Ethereum browser detected. You should consider trying MetaMask!',
-					'Ethereum inkompatibler Browser erkannt! Probiern Sie MetaMask!'
+					'Ethereum inkompatibler Browser erkannt! Probieren Sie MetaMask!'
 			]));
 		}
 	});
