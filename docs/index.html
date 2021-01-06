@@ -4,6 +4,8 @@
 <!-----------------------------------BOOTSTRAP------------------------------------------------------------------------->
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <script src="js/bootstrap.min.js"></script>
+<!-----------------------------------JQUERY---------------------------------------------->
+<script src="js/jquery.min.js"></script>
 <!--------------------------------------------------------------------------------------------------------------------->
 <!-- ! SMART CONTRACT ABI !  -->
 <!----------------------------->
@@ -352,6 +354,10 @@ ABI = [
 		width: 100%; height: 0.1em;
 		display: block;
 	}
+
+	#info_box {
+		transition:all 1s;
+	}
 </style>
 
 <!--------------------------------------------------------------------------------------------------------------------->
@@ -367,7 +373,7 @@ ABI = [
 		<div class="vWrapper">
 			<div class="vInfo vShadow" id="info_field">
 			</div>
-			<button onclick="connect()" id="begin_button" class="vShadow">BEGIN</button></br>
+			<button onclick="loadWeb3AndAccounts()" id="begin_button" class="vShadow">BEGIN</button></br>
 		</div>
 		<div id="configuration_box" class="vWrapper" style="display: none;">
 			<div class="container-fluid">
@@ -455,6 +461,25 @@ ABI = [
 	function log(m){ document.getElementById("info_box").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
 	function logLine(){ document.getElementById("info_box").innerHTML += '</br><span class="vLine"></span>'; }
 	function clearHistory(){document.getElementById("info_box").innerHTML="";}
+	let _flashID = 0;
+	function flash(m){
+		newId = "flash_"+_flashID
+		$("#info_box").append($(
+				'<div id="'+newId+'" class="vInfo vShadow">'+
+					String(m).replace("\n", "</br>")+
+				'</div>'
+		));
+		setTimeout(
+				function(){
+					$('#info_box div').each(
+							function(idx, el){if ( el.id === newId ) $(el).hide('slow', function(){ el.remove(); });}
+					);
+				},
+				2000
+		);
+		_flashID++;
+	}
+
 
 	function switchEnglish()
 	{
@@ -519,25 +544,56 @@ ABI = [
 
 	// Backend :
 
-	let _contract = null;
 	let _web3 = null;
+	let _contract = null;
+	let _contractAddress = null
 	let _administrator = null;
 	let _user = null;
 	let _userIsAdmin = false;
 	let _userAccounts = [];
+	let _netSelection = null;
 
-	function connect() {
+	/**
+	 * 	This method loads the settings from the html form
+	 * 	and saves it in the global variables defined above!
+	 */
+	function loadSettings()
+	{
+		// Save chosen contract address :
+		_contractAddress = document.getElementById("contract_input").value.trim();
+		// Save chosen user address :
+		_user = document.getElementById("address_input").value.trim();
+		// Clear account list :
+		_userAccounts = []
 		// Getting web3 connection instance:
-		_web3 = getWeb3Connection();
+		let selector = document.getElementById("node_selector");
+		let rpcURL = selector.options[selector.selectedIndex].value;
+		_netSelection = rpcURL;
+	}
+
+	/**
+	 * 	This method calls the "loadSettings()" method in order to
+	 * 	be able to proceed to load the web3.js instance needed
+	 * 	to communicate to the blockchain.
+	 * 	After the web3 connection has been established
+	 * 	the method proceeds to load the addresses found
+	 * 	inside the web3 instance (which are the accounts provided by metamask).
+	 */
+	function loadWeb3AndAccounts()
+	{
+		loadSettings();
+		_web3 = getWeb3Connection( _netSelection );
 		// Getting all accounts of the user:
-		_web3.eth.getAccounts((err, res) => {_userAccounts.push(res);});
+		_web3.eth.getAccounts((err, res) => { _userAccounts.push(res); });
 		// After some time (for account query) connect to contract:
 		setTimeout(function (){
 				// Optional: Clear all existing options first:
 				let select = document.getElementById("address_selector");
-				//select.innerHTML = "";
+				let first = select[0];
+				select.innerHTML = "";
+				select.append(first)
 				// Populate list with options:
-				for(var i=0; i < _userAccounts.length; i++) select.innerHTML +=
+				for( var i=0; i < _userAccounts.length; i++ ) select.innerHTML +=
 						"<option value=\"" + _userAccounts[i] + "\">Account "+i+" : " + _userAccounts[i] + "</option>";
 
 				document.getElementById("configuration_box").style.display = '';
@@ -547,9 +603,38 @@ ABI = [
 		}, 1000);
 	}
 
+	/**
+	 * 	This method checks if the settings provided by the user
+	 * 	did change, meaning the user chose another blockchain,
+	 *  smart contract or account address.
+	 *
+	 * @returns {boolean} The truth value of the question : Did the user settings change?
+	 */
+	function settingsChanged() {
+		let userChanged = _user !== document.getElementById("address_input").value.trim();
+		let contractChanged = _contractAddress !== document.getElementById("contract_input").value.trim();
+		let selector = document.getElementById("node_selector");
+		let rpcURL = selector.options[selector.selectedIndex].value;
+		let nodeChanged = _netSelection !== rpcURL;
+		return ( userChanged || contractChanged || nodeChanged );
+	}
+
 	function connectToContract()
 	{
-		var errorOccurred = false;
+		if ( settingsChanged() ) {
+			clearHistory();
+			setTimeout(function (){
+				log(`<b style="color: #009600">`+_l([ "...reconnecting...", "...verbinde..." ])+`</b>`)
+				setTimeout(function (){
+					clearHistory();
+					loadWeb3AndAccounts();
+					setTimeout(function (){connectToContract();},1500);
+				},1000);
+			},1000);
+			return;
+		}
+
+		let errorOccurred = false;
 		if(document.getElementById("contract_input").value.trim()===""){
 			log(`
 			<b style="color: #A00000">
@@ -598,10 +683,9 @@ ABI = [
 		_contract.methods.administrator().call()
 			.then( val => {
 				_administrator = val;
-				_user = document.getElementById("address_input").value.trim();
 				_userIsAdmin = _user === _administrator;
 				if ( _userIsAdmin ) {
-					log(_l([
+					flash(_l([
 						"Hello administrator!",
 						"Hallo Administrator!"
 					]));
@@ -611,7 +695,7 @@ ABI = [
 						"Der Administrator dieses Contracts ist : "+_administrator
 					]));
 				}
-				if (!errorOccurred)
+				if ( !errorOccurred )
 				{
 					let partyOptionList = [];
 					let partyInfoList = [];
@@ -622,7 +706,7 @@ ABI = [
 						_contract.methods.p_i(i).call()
 								.then(partyIndex => {
 									console.log(i+". party, index : '" + partyIndex+"';");
-									_contract.methods.parties(partyIndex).call() // WHY IS THIS NOT WORKING?
+									_contract.methods.parties(partyIndex).call()
 											.then( party => {
 												trials--;
 												console.log(i+" party, index : '"+partyIndex+"'; name : '" + party.name+"';");
@@ -640,15 +724,15 @@ ABI = [
 												}
 											})
 											.catch( err => {
-												log(err.message);
+												flash(err.message);
 												errorOccurred=true;
 											} );
 								})
 								.catch( err => {
-									log(err.message);
+									flash(err.message);
 									errorOccurred=true;
 								});
-						console.log('Trying to find party at index '+i+'; Sleeping a little...')
+						console.log('Trying to find party at index '+i+'; Sleeping a little...');
 						sleep(3000);
 						i ++;
 					}
@@ -659,8 +743,8 @@ ABI = [
 							]
 					);
 					else {
-						console.log('Waiting for trials to finish! ' + trials + ' running...')
-						log(_l(["Loading parties...", "Parteien werden geladen..."]));
+						console.log('Waiting for trials to finish! ' + trials + ' running...');
+						flash(_l(["Loading parties...", "Parteien werden geladen..."]));
 						setTimeout(
 								function () {
 									if (trials === 0)
@@ -730,7 +814,7 @@ ABI = [
 
 		var contract = _contract; //new web3.eth.Contract(ABI, document.getElementById("contract_input").value.trim());// Takes API and address
 
-		log(_l(["...sending vote...", "...Stimme wird abgegeben..."]));
+		flash(_l(["...sending vote...", "...Stimme wird abgegeben..."]));
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		contract.methods.vote(partyIndex)
 			.send({from: address}, function(error, transactionHash){ log(error) } )
@@ -747,17 +831,15 @@ ABI = [
 
 	}
 	
-	function getWeb3Connection()
+	function getWeb3Connection( rpcURL )
 	{
-		log(_l(["...getting web3.js instance...", "...web3.js Instanz wird aufbereitet..."]))
+		flash(_l(["...getting web3.js instance...", "...web3.js Instanz wird aufbereitet..."]))
 		var web3
 		if(window.web3==="legacy"){
 			log(_l([
 					"WARNING: Legacy mode detected! Please switch to neweset MetaMask version!",
 				"ACTHUNG: Sie befinden sich im Legacy-Modus! Bitte wechseln Sie zur neusten MetaMask Version!"
 			]))
-			var selector = document.getElementById("node_selector");
-			var rpcURL = selector.options[selector.selectedIndex].value;
 			web3 = new Web3(new Web3.providers.HttpProvider(rpcURL))
 		} else {
 			web3 = window.web3;
