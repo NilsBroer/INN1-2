@@ -294,6 +294,7 @@ ABI = [
 		margin: 0.25em;
 		display: inline-block;
 		font-family: Arial, Helvetica, sans-serif;
+		border-radius: 1.5em;
 	}
 	.vInfo {
 		width:97%;
@@ -326,6 +327,7 @@ ABI = [
 		display: block
 	}
 	.vWrapper {
+		border-radius: 1em;
 		overflow: hidden;
 		margin: 0.25em;
 		padding: 0.66666em;
@@ -336,7 +338,8 @@ ABI = [
 	.vWrapper input, select{
 		border-bottom: 0;
 		border-left: 0;
-		border-roght: 0;
+		border-right: 0;
+		border-top: 0;
 		width: 100%;
 		margin: 0.4444444em;
 		padding: 0.333333em;
@@ -354,6 +357,14 @@ ABI = [
 		padding: 0.44444em;
 		text-align: center;
 	}
+
+	.vWrapper input:focus {
+		outline-width: 0;
+		-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+		-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+		box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+	}
+
 	.vWrapper button {
 	  background-color: #b0f8b0;
 	  border-radius: 0.25em;
@@ -537,6 +548,7 @@ ABI = [
 	/**
 	 * 	The following methods control the log history.
 	 */
+	function error(m) { log('<b style="color: #A00000">'+m+'</b>'); }
 	function log(m){ document.getElementById("info_box").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
 	function logLine(){ document.getElementById("info_box").innerHTML += '</br><span class="vLine"></span>'; }
 	function clearHistory(){document.getElementById("info_box").innerHTML="";}
@@ -544,6 +556,7 @@ ABI = [
 		The following produces flash messages in the log history which vanish after some time...
 	*/
 	let _flashes = [];
+	function flashError(m) { flash('<b style="color: #A00000">'+m+'</b>'); }
 	function flash(m) {
 		flashEl = $( '<div class="vFlash">'+ String(m).replace("\n", "</br>")+ '</div>' );
 		_flashes.push(flashEl)
@@ -725,25 +738,18 @@ ABI = [
 
 		let errorOccurred = false;
 		if(document.getElementById("contract_input").value.trim()===""){
-			log(`
-			<b style="color: #A00000">
-				`+_l([
+			error(_l([
 						"ERROR! Please enter the voting contract address!",
 						"FEHLER! Bitte geben Sie die Contract-Adresse ein."
-				])+`
-			</b></br>
-			`)
+				]));
 			errorOccurred = true;
 		}
 		if (document.getElementById("address_input").value.trim()==="") {
-			log(`
-			<b style="color: #A00000">
-				`+_l([
+			error( _l([
 						"ERROR! Please enter your address!",
 						"FEHLER! Bitte geben Sie Ihre Ethereum-Adresse ein."
-					])+`
-			</b></br>
-			`)
+					])
+			);
 			errorOccurred = true;
 		}
 
@@ -752,14 +758,10 @@ ABI = [
 		try {
 			_contract = new web3.eth.Contract(ABI, document.getElementById("contract_input").value.trim());// Takes API and address
 		} catch (e) {
-			log(`
-			<b style="color: #A00000">
-				`+_l([
+			error(_l([
 				"ERROR! Failed to connect to contract!</br>Message :</br> '"+e+"'",
 				"Fehler! Verbindung zum Contract ist fehlgeschlagen!</br>Nachricht :</br> '"+e+"'"
-			])+`
-			</b></br>
-			`);
+			]));
 			errorOccurred = true;
 		}
 		if ( _contract != null && !errorOccurred ) {
@@ -813,24 +815,21 @@ ABI = [
 												}
 											})
 											.catch( err => {
-												flash("ERROR: "+err.message);
+												flashError("ERROR: "+err.message);
 												errorOccurred=true;
 											} );
 								})
 								.catch( err => {
-									flash("ERROR: "+err.message);
+									flashError("ERROR: "+err.message);
 									errorOccurred=true;
 								});
 						console.log('Trying to find party at index '+i+'; Sleeping a little...');
 						sleep(3000);
 						i ++;
 					}
-					if ( errorOccurred ) log(
-							[
-									'<b style="color: #A00000">ERROR! Party loading failed.</b>',
-									'<b style=\"color: #A00000\">FEHLER! Parteien konnten nicht geladen werden.</b>'
-							]
-					);
+					if ( errorOccurred ) error([
+								'ERROR! Party loading failed.','FEHLER! Parteien konnten nicht geladen werden.'
+							]);
 					else {
 						console.log('Waiting for trials to finish! ' + trials + ' running...');
 						flash(_l(["Loading parties...", "Parteien werden geladen..."]));
@@ -842,9 +841,9 @@ ABI = [
 											'Lade Versuche erfolgreich!'
 										]))
 									else {
-										log(_l([
-											'<b style="color: #A00000">ERROR! Unfinished loading trials : '+trials+'.</b>',
-											'<b style="color: #A00000">Fehler! Unvollständige Ladeversuche : '+trials+'.</b>'
+										error(_l([
+											'ERROR! Unfinished loading trials : '+trials,
+											'Fehler! Unvollständige Ladeversuche : '+trials
 										]));
 										return;
 									}
@@ -870,14 +869,10 @@ ABI = [
 			})
 			.catch(
 					err => {
-						log(`
-							<b style="color: #A00000">
-							`+_l([
+						error(_l([
 									"ERROR! Failed to fetch administrator address from contract!</br>Message :</br> '"+err.message+"'",
 									"Fehler! Administrator Addresse nicht abrufbar!</br>Nachricht :</br> '"+err.message+"'"
-								])+`
-							</b></br>
-						`);
+								]));
 					}
 			);
 
@@ -907,7 +902,13 @@ ABI = [
 		sleep(300)
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		contract.methods.vote(partyIndex)
-			.send({from: address}, function(error, transactionHash){ log("ERROR! Sending failed! Message: "+error) } )
+			.send({from: address}, function(error, transactionHash){
+				error(_l([
+						"ERROR! Possible contract violation.<br>Transaction-Hash: ",
+						"FEHLER: Potentieller Widerspruch mit dem Vertrag.<br>Transaktions-Hash: "
+					]) + transactionHash
+				);
+			})
 			.then( val => {
 				log(_l(["Success!", "Erfolg!"]));
 				// Check how many votes:
