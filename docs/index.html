@@ -296,20 +296,29 @@ ABI = [
 		font-family: Arial, Helvetica, sans-serif;
 	}
 	.vInfo {
+		width:97%;
+		margin: 0.5em;
+		padding: 0.333em;
+		background-color: #f9fffc;
+		border-radius: 0.25em;
+		display: inline-block
+	}
+	.vFlash {
 		width:95%;
 		margin: 0.5em;
 		padding: 0.333em;
-		border: 0.0333em solid black;
-		background-color: white;
-		border-radius: 0.25em;
-		display: inline-block
+		background-color: #ffffff;
+		border-radius: 0.175em;
+		display: inline-block;
+		-webkit-box-shadow: inset 0px 0px 7px 0px rgba(0,0,0,0.75);
+		-moz-box-shadow: inset 0px 0px 7px 0px rgba(0,0,0,0.75);
+		box-shadow: inset 0px 0px 7px 0px rgba(0,0,0,0.75);
 	}
 	.vLog {
 		margin-left: auto;
 		margin-right: auto;
 		margin-bottom: 0.333em;
 		padding: 0.44444em;
-		border: 0.033333em solid black;
 		background-color: #a3ffe0;
 		border-radius: 0.5em;
 		color: black;
@@ -358,6 +367,10 @@ ABI = [
 	#info_box {
 		transition:all 1s;
 	}
+
+	#begin_button{
+		width: 100%;
+	}
 </style>
 
 <!--------------------------------------------------------------------------------------------------------------------->
@@ -370,11 +383,24 @@ ABI = [
 			<a onclick="switchGerman()" href="javascript:void(0);">Deutsch</a>
 			<a onclick="switchEnglish()" href="javascript:void(0);">English</a>
 		</div>
-		<div class="vWrapper">
-			<div class="vInfo vShadow" id="info_field">
-			</div>
-			<button onclick="loadWeb3AndAccounts()" id="begin_button" class="vShadow">BEGIN</button></br>
-		</div>
+		<div class="vWrapper" >
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col-lg-12">
+						<div class="vInfo vShadow" id="info_field">
+						</div>
+					</div>
+					<div class="col-sm-12 col-md-4 col-lg-5">
+					</div>
+					<div class="col-sm-12 col-md-4 col-lg-2">
+						<button onclick="loadWeb3AndAccounts()" id="begin_button" class="vShadow">BEGIN</button></br>
+					</div>
+					<div class="col-sm-1 col-md-4 col-lg-5">
+					</div>
+				</div>
+			<div>
+		<div>
+
 		<div id="configuration_box" class="vWrapper" style="display: none;">
 			<div class="container-fluid">
 				<div class="row">
@@ -447,6 +473,10 @@ ABI = [
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
 <script>
+	/*
+		This method uses the Promise class and JS async functionality
+		in order to wait for a moment. (needed when querying the contract)
+	*/
 	async function sleep(ms) { // Utility function to await contract results...
 		await new Promise(resolve => setTimeout(resolve, ms));
 	}
@@ -461,23 +491,29 @@ ABI = [
 	function log(m){ document.getElementById("info_box").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
 	function logLine(){ document.getElementById("info_box").innerHTML += '</br><span class="vLine"></span>'; }
 	function clearHistory(){document.getElementById("info_box").innerHTML="";}
-	let _flashID = 0;
-	function flash(m){
-		newId = "flash_"+_flashID
-		$("#info_box").append($(
-				'<div id="'+newId+'" class="vInfo vShadow">'+
-					String(m).replace("\n", "</br>")+
-				'</div>'
-		));
+	/*
+	The following produces flash messages in the log history which vanish after some time...
+	*/
+	let _flashes = [];
+	function flash(m) {
+		flashEl = $( '<div class="vFlash">'+ String(m).replace("\n", "</br>")+ '</div>' );
+		_flashes.push(flashEl)
+		$("#info_box").append(flashEl);
 		setTimeout(
 				function(){
-					$('#info_box div').each(
-							function(idx, el){if ( el.id === newId ) $(el).hide('slow', function(){ el.remove(); });}
-					);
+					let el = _flashes.pop();
+					el.animate({
+						opacity: 0.25,
+						width: "0",
+						height: "0",
+						marginLeft: "100%"
+					}, 1000, function() {
+						el.remove();
+					});
 				},
-				2000
+				2500
 		);
-		_flashID++;
+		sleep(1000);
 	}
 
 
@@ -495,8 +531,6 @@ ABI = [
 				"In the next field, enter the ethereum address which has been assigned to you. This is your identity with which you will cast your vote. "+
 			"</br></br>"+
 				"The last field takes the address of the Voting-Contract. This address can be found below, make sure you verify that it is indeed correct!"+
-			"</br></br>"+
-			"Contract Addresses:".bold()+
 			"</br></br>";
 
 		document.getElementById("connect_button").textContent = "CONNECT";
@@ -522,8 +556,6 @@ ABI = [
 				"Darunter geben Sie die Ihnen zugeteilte Ethereum-Adresse ein. Diese repräsentiert Ihre Identität mit welcher Sie Ihre Stimme abgeben."+
 			"</br></br>"+
 				"Im letzten Feld geben Sie die Adresse des Wahl-Contracts ein, bitte überprüfen Sie dessen Richtigkeit!"+
-			"</br></br>"+
-			"Contract Adressen:".bold()+
 			"</br></br>";
 		
 		document.getElementById("connect_button").textContent = "VERBINDEN";
@@ -674,7 +706,7 @@ ABI = [
 			errorOccurred = true;
 		}
 		if ( _contract != null && !errorOccurred ) {
-			log(_l([
+			flash(_l([
 				"Connection established successfully!",
 				"Verbindung erfolgreich hergestellt!"
 			]));
@@ -748,7 +780,7 @@ ABI = [
 						setTimeout(
 								function () {
 									if (trials === 0)
-										log(_l([
+										flash(_l([
 											'Loading trials successful!',
 											'Lade Versuche erfolgreich!'
 										]))
