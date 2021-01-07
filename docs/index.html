@@ -305,15 +305,15 @@ ABI = [
 	}
 	.vFlash {
 		text-align: center;
-		width:95%;
+		width:97%;
 		margin: 0.5em;
 		padding: 0.333em;
 		background-color: #ffffff;
 		border-radius: 0.175em;
 		display: inline-block;
-		-webkit-box-shadow: inset 0px 0px 7px 0px rgba(0,0,0,0.75);
-		-moz-box-shadow: inset 0px 0px 7px 0px rgba(0,0,0,0.75);
-		box-shadow: inset 0px 0px 7px 0px rgba(0,0,0,0.75);
+		-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+		-moz-box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
+		box-shadow: inset 0px 0px 5px 0px rgba(0,0,0,0.75);
 	}
 	.vLog {
 		margin-left: auto;
@@ -813,12 +813,12 @@ ABI = [
 												}
 											})
 											.catch( err => {
-												flash(err.message);
+												flash("ERROR: "+err.message);
 												errorOccurred=true;
 											} );
 								})
 								.catch( err => {
-									flash(err.message);
+									flash("ERROR: "+err.message);
 									errorOccurred=true;
 								});
 						console.log('Trying to find party at index '+i+'; Sleeping a little...');
@@ -904,9 +904,10 @@ ABI = [
 		var contract = _contract; //new web3.eth.Contract(ABI, document.getElementById("contract_input").value.trim());// Takes API and address
 
 		flash(_l(["...sending vote...", "...Stimme wird abgegeben..."]));
+		sleep(300)
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		contract.methods.vote(partyIndex)
-			.send({from: address}, function(error, transactionHash){ log(error) } )
+			.send({from: address}, function(error, transactionHash){ log("ERROR! Sending failed! Message: "+error) } )
 			.then( val => {
 				log(_l(["Success!", "Erfolg!"]));
 				// Check how many votes:
