@@ -409,6 +409,10 @@ ABI = [
 	#begin_button{
 		width: 100%;
 	}
+
+	#begin_button:hover{
+		animation: pulse 1s linear infinite;
+	}
 </style>
 
 <!--------------------------------------------------------------------------------------------------------------------->
@@ -515,7 +519,7 @@ ABI = [
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"></script>
 <script>
-	/*
+	/**
 		This method uses the Promise class and JS async functionality
 		in order to wait for a moment. (needed when querying the contract)
 	*/
@@ -530,11 +534,14 @@ ABI = [
 		else switchGerman();
 	};
 
+	/**
+	 * 	The following methods control the log history.
+	 */
 	function log(m){ document.getElementById("info_box").innerHTML += ('</br><div class="vInfo vShadow">'+String(m).replace("\n", "</br>")+'</div>'); }
 	function logLine(){ document.getElementById("info_box").innerHTML += '</br><span class="vLine"></span>'; }
 	function clearHistory(){document.getElementById("info_box").innerHTML="";}
-	/*
-	The following produces flash messages in the log history which vanish after some time...
+	/**
+		The following produces flash messages in the log history which vanish after some time...
 	*/
 	let _flashes = [];
 	function flash(m) {
@@ -558,7 +565,10 @@ ABI = [
 		sleep(1000);
 	}
 
-
+	/**
+	 * 	This method switches from english to german and vise versa.
+	 * 	It does so by changing the contents of various html elements.
+	 */
 	function switchEnglish()
 	{
 		_lang = "en"
