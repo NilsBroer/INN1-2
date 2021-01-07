@@ -304,6 +304,7 @@ ABI = [
 		display: inline-block
 	}
 	.vFlash {
+		text-align: center;
 		width:95%;
 		margin: 0.5em;
 		padding: 0.333em;
@@ -333,10 +334,15 @@ ABI = [
 		align-content: center;
 	}
 	.vWrapper input, select{
-		border: 0;
+		border-bottom: 0;
+		border-left: 0;
+		border-roght: 0;
 		width: 100%;
 		margin: 0.4444444em;
 		padding: 0.333333em;
+		-webkit-box-shadow: 0px 0px 6px -3px rgba(0,0,0,1);
+		-moz-box-shadow: 0px 0px 6px -3px rgba(0,0,0,1);
+		box-shadow: 0px 0px 6px -3px rgba(0,0,0,1);
 		
 	}
 	.vWrapper input {
@@ -349,7 +355,7 @@ ABI = [
 		text-align: center;
 	}
 	.vWrapper button {
-	  background-color: lightgreen;
+	  background-color: #b0f8b0;
 	  border-radius: 0.25em;
 	  color: black;
 	  margin: 0.444444em;
@@ -372,6 +378,28 @@ ABI = [
 		border-bottom: 0.055555em solid black;
 		width: 100%; height: 0.1em;
 		display: block;
+	}
+
+	@keyframes pulse {
+		0% {
+			transform: scale(1, 1);
+		}
+
+		50% {
+			transform: scale(1.1, 1.1);
+		}
+
+		100% {
+			transform: scale(1, 1);
+		}
+	}
+
+	.vHighlight {
+		animation: pulse 1s linear infinite;
+		background-color: lightgreen;
+		-webkit-box-shadow: 0px 0px 8px 0px rgba(100,255,50,1);
+		-moz-box-shadow: 0px 0px 8px 0px rgba(100,255,50,1);
+		box-shadow: 0px 0px 8px 0px rgba(100,255,50,1);
 	}
 
 	#info_box {
@@ -461,6 +489,10 @@ ABI = [
 								document.getElementById("contract_input").value =
 										contractSelect.options[contractSelect.selectedIndex].value;
 							});
+							$('#contract_selector').on('change', function() {$('#connect_button').addClass('vHighlight');});
+							$('#address_selector').on('change', function() {$('#connect_button').addClass('vHighlight');});
+							$('#input_selector').on('change', function() {$('#connect_button').addClass('vHighlight');});
+
 						</script>
 					</div>
 					<div class="col-sm-12 col-md-12 col-lg-2">
@@ -661,8 +693,13 @@ ABI = [
 		return ( userChanged || contractChanged || nodeChanged );
 	}
 
+	/**
+	 *  The following method connects to the contract and loads relevant information
+	 *  in order to build a descriptive voting form.
+	 */
 	function connectToContract()
 	{
+		$('#connect_button').removeClass('vHighlight');
 		if ( settingsChanged() ) {
 			clearHistory();
 			setTimeout(function (){
