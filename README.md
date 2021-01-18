@@ -14,7 +14,7 @@ The 2 core components of this repository are:
 - ...and the `docs` folder, which hosts the index.html containing the interface.
 
 The latter of the two has been deployed on github-pages and can be viewed [right here!](https://nilsbroer.github.io/INN1-2/) <br>
-There is even a test-contract deployed on the rinkeybee testnet.
+There is even a test-contract deployed on the Rinkeby testnet.
 
 ---
 
@@ -42,13 +42,13 @@ TODO (leftover):
  ---
  
  ### INN2: ###
- - Improve and finish-up initial contract [ ]
- - Add (any) User-Login-feature [ ]
- - Improve anonymity (currently function-parameters are visible) [ ]
- - Impore usability [ ]
+ - Improve and finish-up initial contract [X]
+ - Add (any) User-Login-feature [X]
+ - Improve anonymity (currently function-parameters are visible) [X]
+ - Impore usability [X]
      - Ideally with Blockchain-internal WebUI
      - Can further be used for login (via MetaMask ?)
- - Actually deploy contract, ! switch to Rinkeby ! [ ]
+ - Actually deploy contract, ! switch to Rinkeby ! [X]
  
  TODO (leftover):
  - Enable MetaMask on a private FH-Network
