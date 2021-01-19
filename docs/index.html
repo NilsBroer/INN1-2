@@ -443,12 +443,12 @@ ABI = [
 						<div class="vInfo vShadow" id="info_field">
 						</div>
 					</div>
-					<div class="col-sm-12 col-md-4 col-lg-5">
+					<div class="col-sm-1 col-md-3 col-lg-4">
 					</div>
-					<div class="col-sm-12 col-md-4 col-lg-2">
+					<div class="col-sm-10 col-md-6 col-lg-4">
 						<button onclick="loadWeb3AndAccounts()" id="begin_button" class="vShadow">BEGIN</button></br>
 					</div>
-					<div class="col-sm-1 col-md-4 col-lg-5">
+					<div class="col-sm-1 col-md-3 col-lg-4">
 					</div>
 				</div>
 			<div>
@@ -569,13 +569,13 @@ ABI = [
 						width: "0",
 						height: "0",
 						marginLeft: "100%"
-					}, 1000, function() {
+					}, 800, function() {
 						el.remove();
 					});
 				},
 				2500
 		);
-		sleep(1000);
+		sleep(2000);
 	}
 
 	/**
@@ -902,21 +902,21 @@ ABI = [
 		sleep(300)
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		contract.methods.vote(partyIndex)
-			.send({from: address}, function(error, transactionHash){
-				error(_l([
-						"ERROR! Possible contract violation.<br>Transaction-Hash: ",
-						"FEHLER: Potentieller Widerspruch mit dem Vertrag.<br>Transaktions-Hash: "
-					]) + transactionHash
-				);
-			})
-			.then( val => {
-				log(_l(["Success!", "Erfolg!"]));
+			.send({from: address}, function( e, transactionHash ){
+				log(_l(["Processing... Please wait! (12 seconds block-time)", "Wird bearbeitet... Bitte warten! (12 Sekunden Block-Zeit)"]));
 				// Check how many votes:
-				log(_l(["Number of votes for your party:","Anzahl der Stimmen für Ihre Partei:"])+"<br>");
-				contract.methods.parties(partyIndex).call()
-						.then( party => log(party.votes) )
-						.catch( err => log(err.message) );
+				setTimeout( function(){
+					contract.methods.parties(partyIndex).call()
+							.then( party => log(_l(["Result:<br>Number of votes for your party:","Resultat:<br>Anzahl der Stimmen für Ihre Partei:"])+"<b>"+party.votes+"</b>") )
+							.catch( err => log("ERROR: "+err.message) );
+				}, 18000);
+			}).then( val => log(_l(["Result arrived!", "Resultat angekommen!"])) ).catch( e => {
+				error(_l([
+					"ERROR! Possible contract violation.<br>Transaction-Hash: ",
+					"FEHLER: Potentieller Widerspruch mit dem Vertrag.<br>Transaktions-Hash: "
+				]) + transactionHash + " : <br>" + e);
 			});
+
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
